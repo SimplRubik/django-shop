@@ -1,0 +1,63 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+    <h2>{{ product.name }}</h2>
+
+    {% if product.images.all %}
+        <div id="carouselExample" class="carousel slide mb-3 " data-bs-ride="carousel" style="max-width: 500px">
+            <div class="carousel-inner">
+                {% for img in product.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ img.image.url }}" class="d-block w-100" style="height: 300px; object-fit: cover;" >
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    {% else %}
+        {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid mb-3">
+        {% endif %}
+    {% endif %}
+
+    <p>{{ product.description }}</p>
+    <p><strong>Price: {{ product.price }} $</strong></p>
+    
+    <a href="{% url 'product_list' %}" class="btn btn-secondary">Back to products</a>
+    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Добавить в корзину</a>
+    
+    <h3>Отзывы</h3>
+    {% for review in reviews  %}
+        <div class="border p-2 mb-2">
+            <strong>{{ review.user }}</strong> ({{ review.created_at|date:"d.m.Y H:i" }})<br>
+            {{ review.text }}
+        </div>
+    {% empty %}
+        <p>Пока нет отзывов.</p>
+    {% endfor %}
+    
+    <h4>Добавить отзыв</h4>
+
+    <form method="post" action={% url "product_detail" product.id %}>
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+            <ul class="text-danger">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+    </form>
+{% endblock %}

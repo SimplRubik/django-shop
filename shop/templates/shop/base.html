@@ -1,0 +1,59 @@
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container">
+    <h1 class="mb-4">My Shop</h1>
+
+    <nav class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm me-2">Главная</a>
+            <a href="{% url 'cart_detail' %}" class="btn btn-warning btn-sm me-2">
+                Корзина ({{ cart_total_count }} шт. / {{ cart_total_sum|floatformat:2 }} $)
+            </a>
+            <a href="{% url 'order_history' %}" class="btn btn-outline-dark btn-sm">История заказов</a>
+
+            <form class="d-inline-flex" method="get" action="{% url 'product_list' %}">
+                <input class="form-control form-control-sm me-2" type="search" placeholder="Поиск" name="q" value="{{ request.GET.q }}">
+                <button type="submit" class="btn btn-outline-success btn-sm">Найти</button>
+            </form>
+
+            {% for category in categories %}
+                <a href="?category={{ category.id }}" class="btn btn-outline-info btn-sm me-1">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+                <span class="me-2">Привет, <strong>{{ user.username }}</strong>!</span>
+            
+                <a href="{% url 'account_logout' %}" class="btn btn-outline-danger btn-sm">Выйти</a>
+            {% else %}
+                <a href="{% provider_login_url 'google' %}" class="btn btn-danger btn-sm">Войти через Google</a>
+            {% endif %}
+        </div>
+
+    </nav>
+
+    <hr>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    {% block content %}
+    {% endblock  %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>

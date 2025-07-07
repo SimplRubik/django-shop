@@ -1,0 +1,42 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+
+    <h2>Все товары</h2>
+
+    {% if query %}
+        <p>Результаты поиска по запросу: <strong>{{ query }}</strong></p>
+    {% endif %}
+
+    {% if products %}
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text small">
+                                {{ product.description|truncatewords:15 }}
+                            </p>
+                            <p class="fw-bold mt-auto">{{ product.price }} $</p>
+                            <div class="d-flex justify-content-between mt-2">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm">Подробнее</a>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm">В корзину</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <p>Ничего не найдено.</p>
+    {% endif %}
+
+{% endblock %}
